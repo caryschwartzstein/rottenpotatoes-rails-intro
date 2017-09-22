@@ -11,7 +11,16 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    if params[:sort] == 'release date'
+      @movies = Movie.all.order(:release_date)
+      @release_hilite = 'hilite'
+      puts @release_hilite
+    elsif params[:sort] == 'title'
+      @movies = Movie.all.order(:title)
+      @title_hilite = 'hilite'
+    else
+      @movies = Movie.all
+    end
   end
 
   def new
@@ -41,5 +50,15 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+# put this inside index
+  # def title_order
+  #   @movies = Movie.all.order(:title)
+  #   render "index"
+  # end
+  
+  # def release_order
+  #   @movies = Movie.all.order(:release_date)
+  #   render "index"
+  # end
+  
 end

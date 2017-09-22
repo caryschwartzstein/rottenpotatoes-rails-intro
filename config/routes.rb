@@ -16,6 +16,8 @@ Rails.application.routes.draw do
 
   resources :movies
   
+  
+  
   # Example resource route with options:
   #   resources :products do
   #     member do
