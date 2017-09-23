@@ -12,6 +12,8 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.get_ratings
+    session["release_hilite"] == "hilite" ? @release_hilite = "hilite" : @release_hilite = nil
+    session["title_hilite"] == "hilite" ? @title_hilite = "hilite" : @title_hilite = nil
     if params.key?("ratings")
       @possible = params[:ratings].keys
       session[:ratings] = @possible
@@ -19,8 +21,7 @@ class MoviesController < ApplicationController
     else
       if session.key?("ratings")
         @possible = session[:ratings]
-        session.key?("release_hilite") ? @release_hilite = "hilite" : @release_hilite = nil
-        session.key?("title_hilite") ? @title_hilite = "hilite" : @title_hilite = nil
+        
       else
         @possible = @all_ratings
       end
@@ -72,15 +73,4 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-# put this inside index
-  # def title_order
-  #   @movies = Movie.all.order(:title)
-  #   render "index"
-  # end
-  
-  # def release_order
-  #   @movies = Movie.all.order(:release_date)
-  #   render "index"
-  # end
-  
 end
