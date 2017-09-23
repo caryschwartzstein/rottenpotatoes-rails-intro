@@ -14,17 +14,31 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.get_ratings
     if params.key?("ratings")
       @possible = params[:ratings].keys
+      session[:ratings] = @possible
+
     else
-      @possible = @all_ratings
+      if session.key?("ratings")
+        @possible = session[:ratings]
+        session.key?("release_hilite") ? @release_hilite = "hilite" : @release_hilite = nil
+        session.key?("title_hilite") ? @title_hilite = "hilite" : @title_hilite = nil
+      else
+        @possible = @all_ratings
+      end
     end
 
     if params[:sort] == 'release date'
       @movies = Movie.where(:rating => @possible).order(:release_date)
       @release_hilite = 'hilite'
-      puts @release_hilite
+      @title_hilite = nil
+      session[:release_hilite] = @release_hilite
+      session[:title_hilite] = nil
+
     elsif params[:sort] == 'title'
       @movies = Movie.where(:rating => @possible).order(:title)
       @title_hilite = 'hilite'
+      @release_hilite = nil
+      session[:title_hilite] = @title_hilite
+      session[:release_hilite] = nil
     else
       @movies = Movie.where(:rating => @possible)
     end
@@ -32,6 +46,7 @@ class MoviesController < ApplicationController
 
   def new
     # default: render 'new' template
+    session.clear()
   end
 
   def create
