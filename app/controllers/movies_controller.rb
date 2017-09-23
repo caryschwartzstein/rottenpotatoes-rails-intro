@@ -1,5 +1,4 @@
 class MoviesController < ApplicationController
-
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -12,15 +11,20 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.get_ratings
-    session["release_hilite"] == "hilite" ? @release_hilite = "hilite" : @release_hilite = nil
-    session["title_hilite"] == "hilite" ? @title_hilite = "hilite" : @title_hilite = nil
-    
+    if session[:sort] == 'title'
+      @title_hilite = "hilite"
+    elsif session[:sort] == "release date"
+      @release_hilite = "hilite"
+    end
+
     if params.key?("ratings")
+      session[:ratings] = params[:ratings]
       @possible = params[:ratings].keys
-      session[:ratings] = @possible
     else
       if session.key?("ratings")
-        @possible = session[:ratings]
+        flash.keep
+        redirect_to movies_path(:ratings => session[:ratings], :sort => params[:sort])
+        return
       else
         @possible = @all_ratings
       end
@@ -31,22 +35,25 @@ class MoviesController < ApplicationController
       @release_hilite = 'hilite'
       @title_hilite = nil
       session[:release_hilite] = @release_hilite
-      session[:title_hilite] = nil
+      session[:sort] = 'release date'
 
     elsif params[:sort] == 'title'
       @movies = Movie.where(:rating => @possible).order(:title)
       @title_hilite = 'hilite'
       @release_hilite = nil
-      session[:title_hilite] = @title_hilite
-      session[:release_hilite] = nil
+      session[:sort] = 'title'
     else
+      if session[:sort]
+        flash.keep
+        redirect_to movies_path(:sort => session[:sort], :ratings => params[:ratings])
+        return
+      end
       @movies = Movie.where(:rating => @possible)
     end
   end
 
   def new
     # default: render 'new' template
-    session.clear()
   end
 
   def create
