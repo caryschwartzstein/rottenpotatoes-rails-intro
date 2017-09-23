@@ -14,14 +14,13 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.get_ratings
     session["release_hilite"] == "hilite" ? @release_hilite = "hilite" : @release_hilite = nil
     session["title_hilite"] == "hilite" ? @title_hilite = "hilite" : @title_hilite = nil
+    
     if params.key?("ratings")
       @possible = params[:ratings].keys
       session[:ratings] = @possible
-
     else
       if session.key?("ratings")
         @possible = session[:ratings]
-        
       else
         @possible = @all_ratings
       end
